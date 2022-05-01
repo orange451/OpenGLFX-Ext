@@ -21,7 +21,7 @@ public class OpenGLPane extends StackPane {
 	private OpenGLCanvas canvas;
 
 	private DoubleProperty desiredFPS;
-	
+
 	private long lastRenderTime = System.nanoTime();
 
 	private static final double INITIAL_FPS = 60;
@@ -45,17 +45,17 @@ public class OpenGLPane extends StackPane {
 		this.canvas.maxHeightProperty().bind(this.maxHeightProperty());
 		this.canvas.minWidthProperty().bind(this.minWidthProperty());
 		this.canvas.minHeightProperty().bind(this.minHeightProperty());
-		
+
 		// OpenGL Initialize Bridge
-		this.addEventHandler(GLInitializeEvent.ANY, (object)->{
+		this.addEventHandler(GLInitializeEvent.ANY, (object) -> {
 			getOnGLInitialize().handle(object);
 		});
-		canvas.onInitialize(()->{
+		canvas.onInitialize(() -> {
 			this.fireEvent(new GLInitializeEvent(GLInitializeEvent.ANY));
 		});
-		
+
 		// OpenGL Rendering Bridge
-		this.addEventHandler(GLRenderEvent.ANY, (object)->{
+		this.addEventHandler(GLRenderEvent.ANY, (object) -> {
 			getOnRender().handle(object);
 		});
 		canvas.onRender(() -> {
@@ -64,16 +64,16 @@ public class OpenGLPane extends StackPane {
 			this.fireEvent(new GLRenderEvent(GLRenderEvent.ANY, deltaTime));
 			lastRenderTime = currentRenderTime;
 		});
-		
+
 		// Force canvas in children
 		this.getChildren().add(canvas);
 		this.getChildren().addListener(new ListChangeListener<>() {
 			@Override
 			public void onChanged(Change<? extends Node> c) {
-				while(c.next()) {
+				while (c.next()) {
 					for (Node node : c.getRemoved()) {
-						if ( node == canvas ) {
-							Platform.runLater(()->{
+						if (node == canvas) {
+							Platform.runLater(() -> {
 								OpenGLPane.this.getChildren().add(canvas);
 							});
 						}
@@ -115,43 +115,43 @@ public class OpenGLPane extends StackPane {
 	public double getDesiredFPS() {
 		return this.desiredFPS.get();
 	}
-	
+
 	/**
 	 * @return OpenGLCanvas backing rendering.
 	 */
 	public OpenGLCanvas getCanvas() {
 		return this.canvas;
 	}
-	
+
 	/**
 	 * Set callback for when OpenGL is initialized with this pane.
 	 */
-    public final void setOnRender( EventHandler<? super GLRenderEvent> value) {
-        onGLRenderProperty().set(value);
-    }
-    
+	public final void setOnRender(EventHandler<? super GLRenderEvent> value) {
+		onGLRenderProperty().set(value);
+	}
+
 	public final EventHandler<? super GLRenderEvent> getOnRender() {
-        return onGLRenderProperty() == null ? null : onGLRenderProperty().get();
-    }
-	
+		return onGLRenderProperty() == null ? null : onGLRenderProperty().get();
+	}
+
 	private SimpleObjectProperty<EventHandler<? super GLRenderEvent>> onGLRender = new SimpleObjectProperty<EventHandler<? super GLRenderEvent>>();
-    private SimpleObjectProperty<EventHandler<? super GLRenderEvent>> onGLRenderProperty() {
+	private SimpleObjectProperty<EventHandler<? super GLRenderEvent>> onGLRenderProperty() {
 		return onGLRender;
 	}
-	
+
 	/**
 	 * Set callback for when OpenGL is initialized with this pane.
 	 */
-    public final void setOnGLInitialize( EventHandler<? super GLInitializeEvent> value) {
-        onGLInitializeProperty().set(value);
-    }
-    
+	public final void setOnGLInitialize(EventHandler<? super GLInitializeEvent> value) {
+		onGLInitializeProperty().set(value);
+	}
+
 	public final EventHandler<? super GLInitializeEvent> getOnGLInitialize() {
-        return onGLInitializeProperty() == null ? null : onGLInitializeProperty().get();
-    }
-	
+		return onGLInitializeProperty() == null ? null : onGLInitializeProperty().get();
+	}
+
 	private SimpleObjectProperty<EventHandler<? super GLInitializeEvent>> onGLInitialize = new SimpleObjectProperty<EventHandler<? super GLInitializeEvent>>();
-    private SimpleObjectProperty<EventHandler<? super GLInitializeEvent>> onGLInitializeProperty() {
+	private SimpleObjectProperty<EventHandler<? super GLInitializeEvent>> onGLInitializeProperty() {
 		return onGLInitialize;
 	}
 }
