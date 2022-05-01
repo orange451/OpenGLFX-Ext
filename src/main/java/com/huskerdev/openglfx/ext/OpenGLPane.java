@@ -74,7 +74,7 @@ public class OpenGLPane extends StackPane {
 					for (Node node : c.getRemoved()) {
 						if (node == canvas) {
 							Platform.runLater(() -> {
-								OpenGLPane.this.getChildren().add(canvas);
+								OpenGLPane.this.getChildren().add(0, canvas);
 							});
 						}
 					}
