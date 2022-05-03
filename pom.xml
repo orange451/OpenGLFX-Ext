@@ -173,12 +173,12 @@
 		<dependency>
 			<groupId>com.github.husker-dev.openglfx</groupId>
 			<artifactId>core</artifactId>
-			<version>2.6</version>
+			<version>master-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.husker-dev.openglfx</groupId>
 			<artifactId>lwjgl</artifactId>
-			<version>2.6</version>
+			<version>master-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Open JFX Base -->

@@ -2,10 +2,10 @@ package com.huskerdev.openglfx.ext;
 
 import com.huskerdev.openglfx.DirectDrawPolicy;
 import com.huskerdev.openglfx.FXGLInitializer;
-import com.huskerdev.openglfx.FXGLTimer;
+import com.huskerdev.openglfx.GLCanvasAnimator;
 import com.huskerdev.openglfx.OpenGLCanvas;
-import com.huskerdev.openglfx.ext.event.GLInitializeEvent;
-import com.huskerdev.openglfx.ext.event.GLRenderEvent;
+import com.huskerdev.openglfx.events.GLInitializeEvent;
+import com.huskerdev.openglfx.events.GLRenderEvent;
 import com.huskerdev.openglfx.lwjgl.LWJGLInitializer;
 
 import javafx.application.Platform;
@@ -22,8 +22,6 @@ public class OpenGLPane extends StackPane {
 
 	private DoubleProperty desiredFPS;
 
-	private long lastRenderTime = System.nanoTime();
-
 	private static final double INITIAL_FPS = 60;
 
 	public static final FXGLInitializer LWJGL_MODULE = new LWJGLInitializer();
@@ -32,10 +30,10 @@ public class OpenGLPane extends StackPane {
 		this.canvas = canvas;
 
 		// Setup desired FPS bridge
-		final FXGLTimer timer = this.canvas.createTimer(INITIAL_FPS);
+		GLCanvasAnimator animator = this.canvas.getAnimator();
 		this.desiredFPS = new SimpleDoubleProperty(INITIAL_FPS);
 		this.desiredFPS.addListener((observable, oldValue, newValue) -> {
-			timer.setFps(newValue.doubleValue());
+			animator.setFps(newValue.doubleValue());
 		});
 
 		// Setup size bridge
@@ -47,22 +45,19 @@ public class OpenGLPane extends StackPane {
 		this.canvas.minHeightProperty().bind(this.minHeightProperty());
 
 		// OpenGL Initialize Bridge
-		this.addEventHandler(GLInitializeEvent.ANY, (object) -> {
+		this.addEventHandler(GLInitializeEvent.getANY(), (object) -> {
 			getOnGLInitialize().handle(object);
 		});
-		canvas.onInitialize(() -> {
-			this.fireEvent(new GLInitializeEvent(GLInitializeEvent.ANY));
+		canvas.onInitialize((event) -> {
+			this.fireEvent(event);
 		});
 
 		// OpenGL Rendering Bridge
-		this.addEventHandler(GLRenderEvent.ANY, (object) -> {
+		this.addEventHandler(GLRenderEvent.getANY(), (object) -> {
 			getOnRender().handle(object);
 		});
-		canvas.onRender(() -> {
-			long currentRenderTime = System.nanoTime();
-			double deltaTime = (currentRenderTime - lastRenderTime) / 1_000_000_000d;
-			this.fireEvent(new GLRenderEvent(GLRenderEvent.ANY, deltaTime));
-			lastRenderTime = currentRenderTime;
+		canvas.onRender((event) -> {
+			this.fireEvent(event);
 		});
 
 		// Force canvas in children
