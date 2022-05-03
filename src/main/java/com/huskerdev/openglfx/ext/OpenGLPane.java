@@ -31,6 +31,7 @@ public class OpenGLPane extends StackPane {
 
 		// Setup desired FPS bridge
 		GLCanvasAnimator animator = new GLCanvasAnimator(INITIAL_FPS, true);
+		this.canvas.setAnimator(animator);
 		this.desiredFPS = new SimpleDoubleProperty(INITIAL_FPS);
 		this.desiredFPS.addListener((observable, oldValue, newValue) -> {
 			if ( newValue.doubleValue() <= 0 )
