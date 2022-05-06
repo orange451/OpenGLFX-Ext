@@ -61,6 +61,8 @@ public class OpenGLPane extends StackPane {
 			getOnRender().handle(object);
 		});
 		canvas.onRender((event) -> {
+			com.sun.javafx.scene.NodeHelper.markDirty(canvas, com.sun.javafx.scene.DirtyBits.REGION_SHAPE);
+			
 			this.fireEvent(event);
 		});
 
