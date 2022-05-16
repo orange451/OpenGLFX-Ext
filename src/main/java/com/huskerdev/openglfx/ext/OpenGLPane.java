@@ -35,7 +35,7 @@ public class OpenGLPane extends StackPane {
 		this.desiredFPS = new SimpleDoubleProperty(INITIAL_FPS);
 		this.desiredFPS.addListener((observable, oldValue, newValue) -> {
 			if ( newValue.doubleValue() <= 0 )
-				newValue = GLCanvasAnimator.getUNLIMITED_FPS();
+				newValue = GLCanvasAnimator.UNLIMITED_FPS;
 			
 			animator.setFps(newValue.doubleValue());
 		});
@@ -99,21 +99,21 @@ public class OpenGLPane extends StackPane {
 	 * <p>
 	 * Defaults to <code>60</code> fps.
 	 */
-	public DoubleProperty desiredFPSProperty() {
+	public DoubleProperty desiredFpsProperty() {
 		return this.desiredFPS;
 	}
 
 	/**
 	 * Sets the desired fps for the OpenGLPane.
 	 */
-	public void setDesiredFPS(double fps) {
+	public void setDesiredFps(double fps) {
 		this.desiredFPS.set(fps);
 	}
 
 	/**
 	 * Returns the desired fps for the OpenGLPane.
 	 */
-	public double getDesiredFPS() {
+	public double getDesiredFps() {
 		return this.desiredFPS.get();
 	}
 
