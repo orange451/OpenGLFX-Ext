@@ -1,12 +1,11 @@
 package com.huskerdev.openglfx.ext;
 
-import com.huskerdev.openglfx.DirectDrawPolicy;
-import com.huskerdev.openglfx.FXGLInitializer;
-import com.huskerdev.openglfx.GLCanvasAnimator;
-import com.huskerdev.openglfx.OpenGLCanvas;
-import com.huskerdev.openglfx.events.GLInitializeEvent;
-import com.huskerdev.openglfx.events.GLRenderEvent;
-import com.huskerdev.openglfx.lwjgl.LWJGLInitializer;
+import com.huskerdev.openglfx.GLExecutor;
+import com.huskerdev.openglfx.canvas.GLCanvas;
+import com.huskerdev.openglfx.canvas.GLCanvasAnimator;
+import com.huskerdev.openglfx.canvas.GLProfile;
+import com.huskerdev.openglfx.canvas.events.GLInitializeEvent;
+import com.huskerdev.openglfx.canvas.events.GLRenderEvent;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -18,26 +17,24 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 
 public class OpenGLPane extends StackPane {
-	private OpenGLCanvas canvas;
+	private GLCanvas canvas;
 
 	private DoubleProperty desiredFPS;
 
 	private static final double INITIAL_FPS = 60;
 
-	public static final FXGLInitializer LWJGL_MODULE = new LWJGLInitializer();
-
-	private OpenGLPane(OpenGLCanvas canvas) {
+	private OpenGLPane(GLCanvas canvas) {
 		this.canvas = canvas;
 
 		// Setup desired FPS bridge
-		GLCanvasAnimator animator = new GLCanvasAnimator(INITIAL_FPS, true);
+		GLCanvasAnimator animator = new GLCanvasAnimator(INITIAL_FPS);
 		this.canvas.setAnimator(animator);
 		this.desiredFPS = new SimpleDoubleProperty(INITIAL_FPS);
 		this.desiredFPS.addListener((observable, oldValue, newValue) -> {
 			if ( newValue.doubleValue() <= 0 )
 				newValue = GLCanvasAnimator.UNLIMITED_FPS;
 			
-			animator.setFps(newValue.doubleValue());
+			//animator.setFps(newValue.doubleValue());
 		});
 
 		// Setup size bridge
@@ -52,7 +49,8 @@ public class OpenGLPane extends StackPane {
 		this.addEventHandler(GLInitializeEvent.getANY(), (object) -> {
 			getOnGLInitialize().handle(object);
 		});
-		canvas.onInitialize((event) -> {
+		
+		canvas.addOnInitEvent((event) -> {
 			this.fireEvent(event);
 		});
 
@@ -60,9 +58,9 @@ public class OpenGLPane extends StackPane {
 		this.addEventHandler(GLRenderEvent.getANY(), (object) -> {
 			getOnRender().handle(object);
 		});
-		canvas.onRender((event) -> {
-			com.sun.javafx.scene.NodeHelper.markDirty(canvas, com.sun.javafx.scene.DirtyBits.REGION_SHAPE);
-			
+		
+		canvas.addOnRenderEvent((event) -> {
+			com.sun.javafx.scene.NodeHelper.markDirty(canvas, com.sun.javafx.scene.DirtyBits.REGION_SHAPE);	
 			this.fireEvent(event);
 		});
 
@@ -86,12 +84,11 @@ public class OpenGLPane extends StackPane {
 
 	/**
 	 * Initialize a new OpenGLPane instance. Backed by
-	 * {@link OpenGLCanvas#create(FXGLInitializer)}. OpenGLPane provides a more
+	 * {@link GLCanvas#create(FXGLInitializer)}. OpenGLPane provides a more
 	 * JavaFX friendly API.
 	 */
-	public static OpenGLPane create(FXGLInitializer initializer, DirectDrawPolicy policy) {
-		OpenGLCanvas canvas = OpenGLCanvas.create(initializer, policy);
-		return new OpenGLPane(canvas);
+	public static OpenGLPane create(GLExecutor initializer, GLProfile policy) {
+		return new OpenGLPane(new GLCanvas(initializer, policy));
 	}
 
 	/**
@@ -118,9 +115,9 @@ public class OpenGLPane extends StackPane {
 	}
 
 	/**
-	 * @return OpenGLCanvas backing rendering.
+	 * @return GLCanvas backing rendering.
 	 */
-	public OpenGLCanvas getCanvas() {
+	public GLCanvas getCanvas() {
 		return this.canvas;
 	}
 
