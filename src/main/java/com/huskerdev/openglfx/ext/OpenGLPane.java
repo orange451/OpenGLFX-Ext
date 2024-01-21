@@ -22,19 +22,22 @@ public class OpenGLPane extends StackPane {
 	private DoubleProperty desiredFPS;
 
 	private static final double INITIAL_FPS = 60;
+	
+	private void setFps(double fps) {
+		this.canvas.setAnimator(new GLCanvasAnimator(fps));
+	}
 
 	private OpenGLPane(GLCanvas canvas) {
 		this.canvas = canvas;
 
 		// Setup desired FPS bridge
-		GLCanvasAnimator animator = new GLCanvasAnimator(INITIAL_FPS);
-		this.canvas.setAnimator(animator);
+		this.setFps(INITIAL_FPS);
 		this.desiredFPS = new SimpleDoubleProperty(INITIAL_FPS);
 		this.desiredFPS.addListener((observable, oldValue, newValue) -> {
 			if ( newValue.doubleValue() <= 0 )
 				newValue = GLCanvasAnimator.UNLIMITED_FPS;
 			
-			//animator.setFps(newValue.doubleValue());
+			this.setFps(newValue.doubleValue());
 		});
 
 		// Setup size bridge
@@ -87,8 +90,26 @@ public class OpenGLPane extends StackPane {
 	 * {@link GLCanvas#create(FXGLInitializer)}. OpenGLPane provides a more
 	 * JavaFX friendly API.
 	 */
-	public static OpenGLPane create(GLExecutor initializer, GLProfile policy) {
-		return new OpenGLPane(new GLCanvas(initializer, policy));
+	public static OpenGLPane create(GLExecutor initializer) {
+		return new OpenGLPane(new GLCanvas(initializer));
+	}
+
+	/**
+	 * Initialize a new OpenGLPane instance. Backed by
+	 * {@link GLCanvas#create(FXGLInitializer)}. OpenGLPane provides a more
+	 * JavaFX friendly API.
+	 */
+	public static OpenGLPane create(GLExecutor initializer, GLProfile profile) {
+		return new OpenGLPane(new GLCanvas(initializer, profile));
+	}
+
+	/**
+	 * Initialize a new OpenGLPane instance. Backed by
+	 * {@link GLCanvas#create(FXGLInitializer)}. OpenGLPane provides a more
+	 * JavaFX friendly API.
+	 */
+	public static OpenGLPane create(GLExecutor initializer, GLProfile profile, boolean flipY) {
+		return new OpenGLPane(new GLCanvas(initializer, profile, flipY));
 	}
 
 	/**
